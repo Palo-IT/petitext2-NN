@@ -1,0 +1,566 @@
+Installation de tensorflow-gpu (à zéro !!!)
+
+0. Connexion sur la machine : 
+
+sudo ssh -i dev0 ubuntu@54.37.20.249 
+
+--> cet flèche indique qu'une action est nécessaire
+
+
+########################################################################################################################################
+INSTALLATION DE CUDA-TOOLKIT 8.0
+####################################################################################################################################
+
+a partir du site : http://docs.nvidia.com/cuda/cuda-installation-guide-linux/#axzz4VZnqTJ2A
+
+1. Vérifier que la carte graphique nvidia est présente : lshw -enable pci -class display
+
+RESULTATS : 
+
+WARNING: you should run this program as super-user.
+  *-display:0 UNCLAIMED   
+       description: VGA compatible controller
+       product: GD 5446
+       vendor: Cirrus Logic
+       physical id: 2
+       bus info: pci@0000:00:02.0
+       version: 00
+       width: 32 bits
+       clock: 33MHz
+       capabilities: vga_controller
+       configuration: latency=0
+       resources: memory:f0000000-f1ffffff memory:fe0d4000-fe0d4fff memory:fe0c0000-fe0cffff
+  *-display:1 UNCLAIMED
+       description: VGA compatible controller
+       product: NVIDIA Corporation
+       vendor: NVIDIA Corporation
+       physical id: 5
+       bus info: pci@0000:00:05.0
+       version: a1
+       width: 64 bits
+       clock: 33MHz
+       capabilities: vga_controller cap_list
+       configuration: latency=0
+       resources: memory:fd000000-fdffffff memory:e0000000-efffffff memory:f2000000-f3ffffff ioport:c000(size=128) memory:fe000000-fe07ffff
+WARNING: output may be incomplete or inaccurate, you should run this program as super-user.
+
+2. Vérifier la version du système linux : uname -m && cat /etc/*release
+
+RESULTATS : 
+
+x86_64
+DISTRIB_ID=Ubuntu
+DISTRIB_RELEASE=16.04
+DISTRIB_CODENAME=xenial
+DISTRIB_DESCRIPTION="Ubuntu 16.04.3 LTS"
+NAME="Ubuntu"
+VERSION="16.04.3 LTS (Xenial Xerus)"
+ID=ubuntu
+ID_LIKE=debian
+PRETTY_NAME="Ubuntu 16.04.3 LTS"
+VERSION_ID="16.04"
+HOME_URL="http://www.ubuntu.com/"
+SUPPORT_URL="http://help.ubuntu.com/"
+BUG_REPORT_URL="http://bugs.launchpad.net/ubuntu/"
+VERSION_CODENAME=xenial
+UBUNTU_CODENAME=xenial
+
+3. Mettre à jour le système : 
+
+--> sudo apt-get update
+
+
+4. Vérifier l'installation de gcc : gcc --version
+
+The program 'gcc' is currently not installed. You can install it by typing:
+sudo apt install gcc
+
+---> sudo apt install gcc
+
+en editant la commande : gcc --version
+
+RESULTATS : 
+
+gcc (Ubuntu 5.4.0-6ubuntu1~16.04.6) 5.4.0 20160609
+Copyright (C) 2015 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+5. Vérification du kernel : uname -r
+
+RESULTATS : 
+
+4.4.0-108-generic
+
+6. Installation du kernel headers et development packages
+
+--> sudo apt-get install linux-headers-$(uname -r)
+
+RESULATS : 
+
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+linux-headers-4.4.0-108-generic is already the newest version (4.4.0-108.131).
+linux-headers-4.4.0-108-generic set to manually installed.
+0 upgraded, 0 newly installed, 0 to remove and 64 not upgraded.
+
+7. Télécharger le nvidia cuda toolkit, à partir de ce lien : https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&target_distro=Ubuntu&target_version=1604&target_type=debnetwork
+
+ATTENTION TELECHARGER LA VERSION 8 DU TOOLKIT ET NON LA VERSION 9 : 
+
+Télécharger le package : 
+
+--> wget https://developer.nvidia.com/compute/cuda/8.0/Prod2/local_installers/cuda-repo-ubuntu1604-8-0-local-ga2_8.0.61-1_amd64-deb
+
+en faisant un ls -all 
+
+RESULTAT : 
+Le fichier suivant devrait être présent :
+cuda-repo-ubuntu1604-8-0-local-ga2_8.0.61-1_amd64-deb
+
+8. Installation du toolkit 
+
+--> sudo dpkg -i cuda-repo-ubuntu1604-8-0-local-ga2_8.0.61-1_amd64-deb
+
+le message suivant apparait :
+
+RESULAT : 
+
+Selecting previously unselected package cuda-repo-ubuntu1604-8-0-local-ga2.
+(Reading database ... 57842 files and directories currently installed.)
+Preparing to unpack cuda-repo-ubuntu1604-8-0-local-ga2_8.0.61-1_amd64-deb ...
+Unpacking cuda-repo-ubuntu1604-8-0-local-ga2 (8.0.61-1) ...
+Setting up cuda-repo-ubuntu1604-8-0-local-ga2 (8.0.61-1) ...
+OK
+
+
+--> sudo apt-get update
+
+RESULAT : 
+
+Get:1 file:/var/cuda-repo-8-0-local-ga2  InRelease
+Ign:1 file:/var/cuda-repo-8-0-local-ga2  InRelease
+Get:2 file:/var/cuda-repo-8-0-local-ga2  Release [574 B]
+Get:2 file:/var/cuda-repo-8-0-local-ga2  Release [574 B]
+Get:3 file:/var/cuda-repo-8-0-local-ga2  Release.gpg [819 B]
+Get:3 file:/var/cuda-repo-8-0-local-ga2  Release.gpg [819 B]
+Hit:4 http://security.ubuntu.com/ubuntu xenial-security InRelease
+Hit:5 http://nova.clouds.archive.ubuntu.com/ubuntu xenial InRelease
+Hit:6 http://nova.clouds.archive.ubuntu.com/ubuntu xenial-updates InRelease
+Hit:7 http://nova.clouds.archive.ubuntu.com/ubuntu xenial-backports InRelease
+Get:8 file:/var/cuda-repo-8-0-local-ga2  Packages [22.7 kB]
+Reading package lists... Done      
+
+
+--> sudo apt-get install cuda
+
+beaucoup d'information puis 
+
+Running hooks in /etc/ca-certificates/update.d...
+
+done.
+done.
+
+9. Installation des exemples :
+
+Tout d'abord création d'un répertoire : 
+
+--> mkdir /home/ubuntu/cuda
+
+Puis exécuter le script d'installation
+ 
+--> cuda-install-samples-8.0.sh /home/ubuntu/cuda
+
+RESULTAT : 
+
+Copying samples to /home/ubuntu/cuda/NVIDIA_CUDA-8.0_Samples now...
+Finished copying samples.
+
+
+10. Vérification de l'installation : nvidia-smi
+
+Mon Feb 19 10:36:02 2018       
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 384.111                Driver Version: 384.111                   |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|===============================+======================+======================|
+|   0  GeForce GTX 106...  Off  | 00000000:00:05.0 Off |                  N/A |
+|  0%   28C    P0    27W / 120W |      0MiB /  6072MiB |      2%      Default |
++-------------------------------+----------------------+----------------------+
+                                                                               
++-----------------------------------------------------------------------------+
+| Processes:                                                       GPU Memory |
+|  GPU       PID   Type   Process name                             Usage      |
+|=============================================================================|
+|  No running processes found                                                 |
++-----------------------------------------------------------------------------+
+
+Cuda est installé dans /usr/local/, ainsi un ls -all /usr/local permet d'avoir : 
+
+total 44
+drwxr-xr-x 11 root root 4096 Feb 19 10:35 .
+drwxr-xr-x 11 root root 4096 Feb 19 10:31 ..
+drwxr-xr-x  2 root root 4096 Jan  9 22:20 bin
+lrwxrwxrwx  1 root root    8 Feb 19 10:35 cuda -> cuda-8.0
+drwxr-xr-x 14 root root 4096 Feb 19 10:31 cuda-8.0
+drwxr-xr-x  2 root root 4096 Jan  9 22:20 etc
+drwxr-xr-x  2 root root 4096 Jan  9 22:20 games
+drwxr-xr-x  2 root root 4096 Jan  9 22:20 include
+drwxr-xr-x  4 root root 4096 Feb 19 10:30 lib
+lrwxrwxrwx  1 root root    9 Jan  9 22:20 man -> share/man
+drwxr-xr-x  2 root root 4096 Jan  9 22:20 sbin
+drwxr-xr-x  8 root root 4096 Feb 19 10:33 share
+drwxr-xr-x  2 root root 4096 Jan  9 22:20 src
+
+
+11. Vérification du driver : cat /proc/driver/nvidia/version
+
+RESULTAT :
+
+NVRM version: NVIDIA UNIX x86_64 Kernel Module  384.111  Tue Dec 19 23:51:45 PST 2017
+GCC version:  gcc version 5.4.0 20160609 (Ubuntu 5.4.0-6ubuntu1~16.04.6) 
+
+
+12. Post-installation Actions
+
+--> export PATH=/usr/local/cuda-8.0/bin${PATH:+:${PATH}}
+
+--> export LD_LIBRARY_PATH=/usr/local/cuda-8.0/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
+
+Ce dernier est pour un os 64-bits
+
+13. Verification du compilateur : nvcc -V
+
+RESULTAT :
+
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2015 NVIDIA Corporation
+Built on Tue_Aug_11_14:27:32_CDT_2015
+Cuda compilation tools, release 7.5, V7.5.17
+
+
+14. Compiler les exemples : 
+
+--> cd /home/ubuntu/cuda/NVIDIA_CUDA-8.0_Samples/bin
+
+--> make
+
+15. Executer les exemples : 
+
+Tout d'ablord localiser deviceQuery (bon courage !!!)
+Il est dans /home/ubuntu/cuda/NVIDIA_CUDA-8.0_Samples/1_Utilities/deviceQuery/ puis lancer  : ./deviceQuery
+
+RESULTAT : 
+
+./deviceQuery Starting...
+
+ CUDA Device Query (Runtime API) version (CUDART static linking)
+
+Detected 1 CUDA Capable device(s)
+
+Device 0: "GeForce GTX 1060 6GB"
+  CUDA Driver Version / Runtime Version          9.0 / 8.0
+  CUDA Capability Major/Minor version number:    6.1
+  Total amount of global memory:                 6073 MBytes (6367739904 bytes)
+  (10) Multiprocessors, (128) CUDA Cores/MP:     1280 CUDA Cores
+  GPU Max Clock rate:                            1747 MHz (1.75 GHz)
+  Memory Clock rate:                             4004 Mhz
+  Memory Bus Width:                              192-bit
+  L2 Cache Size:                                 1572864 bytes
+  Maximum Texture Dimension Size (x,y,z)         1D=(131072), 2D=(131072, 65536), 3D=(16384, 16384, 16384)
+  Maximum Layered 1D Texture Size, (num) layers  1D=(32768), 2048 layers
+  Maximum Layered 2D Texture Size, (num) layers  2D=(32768, 32768), 2048 layers
+  Total amount of constant memory:               65536 bytes
+  Total amount of shared memory per block:       49152 bytes
+  Total number of registers available per block: 65536
+  Warp size:                                     32
+  Maximum number of threads per multiprocessor:  2048
+  Maximum number of threads per block:           1024
+  Max dimension size of a thread block (x,y,z): (1024, 1024, 64)
+  Max dimension size of a grid size    (x,y,z): (2147483647, 65535, 65535)
+  Maximum memory pitch:                          2147483647 bytes
+  Texture alignment:                             512 bytes
+  Concurrent copy and kernel execution:          Yes with 2 copy engine(s)
+  Run time limit on kernels:                     No
+  Integrated GPU sharing Host Memory:            No
+  Support host page-locked memory mapping:       Yes
+  Alignment requirement for Surfaces:            Yes
+  Device has ECC support:                        Disabled
+  Device supports Unified Addressing (UVA):      Yes
+  Device PCI Domain ID / Bus ID / location ID:   0 / 0 / 5
+  Compute Mode:
+     < Default (multiple host threads can use ::cudaSetDevice() with device simultaneously) >
+
+deviceQuery, CUDA Driver = CUDART, CUDA Driver Version = 9.0, CUDA Runtime Version = 8.0, NumDevs = 1, Device0 = GeForce GTX 1060 6GB
+Result = PASS
+
+
+Puis lancez : /home/ubuntu/cuda/NVIDIA_CUDA-8.0_Samples/1_Utilities/bandwidthTest/./bandwidthTest
+
+RESULTAT : 
+
+[CUDA Bandwidth Test] - Starting...
+Running on...
+
+ Device 0: GeForce GTX 1060 6GB
+ Quick Mode
+
+ Host to Device Bandwidth, 1 Device(s)
+ PINNED Memory Transfers
+   Transfer Size (Bytes)	Bandwidth(MB/s)
+   33554432			2920.9
+
+ Device to Host Bandwidth, 1 Device(s)
+ PINNED Memory Transfers
+   Transfer Size (Bytes)	Bandwidth(MB/s)
+   33554432			2601.6
+
+ Device to Device Bandwidth, 1 Device(s)
+ PINNED Memory Transfers
+   Transfer Size (Bytes)	Bandwidth(MB/s)
+   33554432			143410.3
+
+Result = PASS
+
+NOTE: The CUDA Samples are not meant for performance measurements. Results may vary when GPU Boost is enabled.
+
+
+16. Actions optionnelles : 
+
+Le debugger, aucune action pour cela 
+
+###############################################################################################################################
+FIN DE L'INSTALLATION DE CUDA-TOOLKIT
+###############################################################################################################################
+
+
+###############################################################################################################################
+INSTALLATION DE cuDNN v7.0
+###############################################################################################################################
+
+
+1. Télécharger libcudnn7_7.0.5.15-1+cuda8.0_amd64.deb, libcudnn7-dev_7.0.5.15-1+cuda8.0_amd64.deb et libcudnn7-doc_7.0.5.15-1+cuda8.0_amd64.deb sur le site https://developer.nvidia.com/cudnn
+
+Il est demandé de se connecter (login/mot de passe) puis d'accepter les termes de la licence, puis de choisir la version correspondant à cuda-8.0
+
+
+2. Transférer les fichiers sur le serveur dev0 à partir de son poste :  
+
+
+sudo scp -i dev0 /media/karim/Data1/karim/Installation/libcudnn7_7.0.5.15-1+cuda8.0_amd64.deb ubuntu@54.37.20.249:/home/ubuntu/
+
+sudo scp -i dev0 /media/karim/Data1/karim/Installation/libcudnn7-dev_7.0.5.15-1+cuda8.0_amd64.deb ubuntu@54.37.20.249:/home/ubuntu/
+
+sudo scp -i dev0 /media/karim/Data1/karim/Installation/libcudnn7-doc_7.0.5.15-1+cuda8.0_amd64.deb  ubuntu@54.37.20.249:/home/ubuntu/
+
+
+
+3. Installer les packages : 
+
+sudo dpkg -i libcudnn7_7.0.5.15-1+cuda8.0_amd64.deb
+
+RESULTAT : 
+
+Selecting previously unselected package libcudnn7.
+(Reading database ... 109406 files and directories currently installed.)
+Preparing to unpack libcudnn7_7.0.5.15-1+cuda8.0_amd64.deb ...
+Unpacking libcudnn7 (7.0.5.15-1+cuda8.0) ...
+Setting up libcudnn7 (7.0.5.15-1+cuda8.0) ...
+Processing triggers for libc-bin (2.23-0ubuntu9) ...
+/sbin/ldconfig.real: /usr/local/cuda-8.0/targets/x86_64-linux/lib/libcudnn.so.7 is not a symbolic link
+
+
+
+sudo dpkg -i libcudnn7-dev_7.0.5.15-1+cuda8.0_amd64.deb
+
+Selecting previously unselected package libcudnn7-dev.
+(Reading database ... 109413 files and directories currently installed.)
+Preparing to unpack libcudnn7-dev_7.0.5.15-1+cuda8.0_amd64.deb ...
+Unpacking libcudnn7-dev (7.0.5.15-1+cuda8.0) ...
+Setting up libcudnn7-dev (7.0.5.15-1+cuda8.0) ...
+update-alternatives: using /usr/include/x86_64-linux-gnu/cudnn_v7.h to provide /usr/include/cudnn.h (libcudnn) in auto mode
+
+
+
+sudo dpkg -i libcudnn7-doc_7.0.5.15-1+cuda8.0_amd64.deb
+
+(Reading database ... 109419 files and directories currently installed.)
+Preparing to unpack libcudnn7-doc_7.0.5.15-1+cuda8.0_amd64.deb ...
+Unpacking libcudnn7-doc (7.0.5.15-1+cuda8.0) over (7.0.5.15-1+cuda8.0) ...
+Setting up libcudnn7-doc (7.0.5.15-1+cuda8.0) ...
+
+
+
+Vérification de l'installation : ATTENTION LES EXEMPLES SONT DANS /usr/src/cudnn_samples_v7
+
+
+4. Copier les exemples avec ceux de cuda : 
+
+--> cp -r /usr/src/cudnn_samples_v7 /home/ubuntu/cuda/
+
+5.Puis se mettre dans /home/ubuntu/cuda/cudnn_samples_v7/mnistCUDNN : 
+
+--> cd /home/ubuntu/cuda/cudnn_samples_v7/mnistCUDNN
+
+6. Compiler l'exemple mnistCUDNN
+
+
+--> make clean && make
+
+
+7. Exécuter le code :
+
+--> ./mnistCUDNN
+
+
+RESULTAT :
+
+plusieurs informations dont : Test passed!
+
+###############################################################################################################################
+FIN DE L'INSTALLATION DE cuDNN v7.0
+###############################################################################################################################
+
+
+
+###############################################################################################################################
+INSTALLATION DE ANACONDA ET TENSORFLOW-GPU
+###############################################################################################################################
+
+
+1. Déléchargement d'anaconda : 
+
+--> wget https://repo.continuum.io/archive/Anaconda3-5.1.0-Linux-x86_64.sh
+
+RESULTAT : 
+
+2018-02-19 14:12:42 (30.2 MB/s) - ‘Anaconda3-5.1.0-Linux-x86_64.sh’ saved [577996269/577996269]
+
+
+2. Installation d'anaconda : 
+
+sudo sh Anaconda3-5.1.0-Linux-x86_64.sh
+
+Il demande de choisir le chemin d'installation, taper yes par défaut.
+Puis il demande d'installer vscode, editer : yes
+
+3. Vérifier la mise à jour du path : cela est mis dans le fichier .bashrc 	
+
+--> export PATH=/home/ubuntu/anaconda3/bin${PATH:+:${PATH}}
+
+
+
+
+ATTENTION, UN MESSAGE S'AFFICHE LORS DE L'INSTALLATION : 
+
+Appending source /home/ubuntu/anaconda3/bin/activate to /home/ubuntu/.bashrc
+A backup will be made to: /home/ubuntu/.bashrc-anaconda3.bak
+
+
+For this change to become active, you have to open a new terminal.
+
+
+4. J'ai redémarré le terminal pour prendre en compte la remarque (mais cela peut-être fonctionner sans)
+
+5. Installation de tensorflow-gpu : https://anaconda.org/anaconda/tensorflow-gpu
+
+--> conda install -c anaconda tensorflow-gpu 
+
+6. Installation de keras : conda install keras
+
+ATTENTION VERIFIER LA VERSION DE TENSORFLOW-GPU INSTALLEE --> SI LA VERSION EST tensorflow-gpu:      1.0.1-py36_4, IL EST NECESSAIRE DE METTRE A JOUR 
+A MOINS DE LUI INDIQUER DE CHERCHER LA VERSION 1.4.1 
+
+CETTE REMARQUE FAIT SUITE A L'INSTALLATION DE KERAS QUI LUI INSTALLE UNE VERSION DE TENSORFLOW ET TENSORFLOW-BASE DE 1.4.1
+
+DONC J'AI FAIT UN :
+
+--> conda update -c anaconda tensorflow-gpu 
+
+RESULTAT :
+
+The following packages will be downloaded:
+
+    package                    |            build
+    ---------------------------|-----------------
+    tensorflow-gpu-base-1.4.1  |   py36h01caf0a_0       113.9 MB  anaconda
+    tensorflow-gpu-1.4.1       |                0           3 KB  anaconda
+    cudnn-7.0.5                |        cuda8.0_0       249.3 MB  anaconda
+    cudatoolkit-8.0            |                3       322.4 MB  anaconda
+    ------------------------------------------------------------
+                                           Total:       685.7 MB
+
+The following NEW packages will be INSTALLED:
+
+    tensorflow-gpu-base: 1.4.1-py36h01caf0a_0  anaconda
+
+The following packages will be UPDATED:
+
+    ca-certificates:     2017.08.26-h1d4fec5_0          --> 2017.08.26-h1d4fec5_0 anaconda
+    certifi:             2018.1.18-py36_0               --> 2018.1.18-py36_0      anaconda
+    cudatoolkit:         7.5-2                 anaconda --> 8.0-3                 anaconda
+    cudnn:               5.1-0                 anaconda --> 7.0.5-cuda8.0_0       anaconda
+    openssl:             1.0.2n-hb7f436b_0              --> 1.0.2n-hb7f436b_0     anaconda
+    tensorflow-gpu:      1.0.1-py36_4          anaconda --> 1.4.1-0               anaconda
+
+
+
+###############################################################################################################################
+FIN D'INSTALLATION DE ANACONDA
+###############################################################################################################################
+
+
+
+###############################################################################################################################
+CONFIGURATION JUPYTER
+###############################################################################################################################
+
+1. Création d'un fichier de configuration jupyter : 
+
+jupyter notebook --generate-config
+
+RESULTAT :
+
+un répertoire .jupyter est crée avec un fichier jupyter_notebook_config.py à l'intérieur
+
+2. Mise à jour du fichier de configuration Editer le fichier jupyter_notebook_config.py
+
+création du répertoire où le notebook s'ouvrira : mkdir /home/ubuntu/spacework
+
+c.NotebookApp.ip = '*'
+c.NotebookApp.open_browser = False
+c.NotebookApp.password = u'sha1:c0041b1bd85d:84aa4578f3da0110e3016f31c4a9676a16d398ab'
+c.NotebookApp.port = 8888
+c.NotebookApp.notebook_dir = '/home/ubuntu/spacework'
+
+
+3. Lancer : jupyter notebook
+
+4. Dans un navigateur : http://54.37.20.249:8888/, un mot de passe est demandé 
+
+
+###############################################################################################################################
+FIN CONFIGURATION JUPYTER
+###############################################################################################################################
+
+###############################################################################################################################
+TOOLS
+###############################################################################################################################
+
+1. Installation htop : sudo apt-get install htop 
+
+2. Installation unzip : sudo apt-get install unzip
+
+
+
+
+
+
+###############################################################################################################################
+FIN TOOLS
+###############################################################################################################################
+
+ 
