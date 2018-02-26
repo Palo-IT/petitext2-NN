@@ -1,0 +1,35 @@
+Première itération avec glove en word embeding :
+
+1. Lancement de la phase d'apprentissage avec le processus python dans une console 
+
+--> nohup python -u /home/ubuntu/spacework/R-NET/R-Net-master-train.py --mode train > /home/ubuntu/spacework/R-NET/log/r-net-train.log &
+
+RESULTAT : 
+
+100%|██████████| 60000/60000 [19:27:31<00:00,  1.17s/it]n.log 
+100%|██████████| 219/219 [01:35<00:00,  2.29it/s]
+
+
+
+la durée a été de 19h27mn
+
+2. Lancement de la phase de test pour générer les réponses : answer.json
+
+--> nohup python -u /home/ubuntu/spacework/R-NET/R-Net-master-test.py --mode test > /home/ubuntu/spacework/R-NET/log/r-net-test.log &
+
+RESULTAT : 
+
+totalMemory: 5.93GiB freeMemory: 5.86GiB
+2018-02-21 12:27:11.629227: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1120] Creating TensorFlow device (/device:GPU:0) -> (device: 0, name: GeForce GTX 1060 6GB, pci bus id: 0000:00:05.0, compute capability: 6.1)
+100%|██████████| 221/221 [02:05<00:00,  1.76it/s]
+Exact Match: 69.97161778618732, F1: 78.7595992310913
+
+
+
+2. Obtenir le score officiel (se placer dans le répertoire de evaluate-v1.1.py) : 
+
+--> python -u /home/ubuntu/spacework/R-NET/evaluate-v1.1.py /home/ubuntu/spacework/R-NET/data/squad/dev-v1.1.json /home/ubuntu/spacework/R-NET/log/answer/answer.json
+
+{"exact_match": 69.97161778618732, "f1": 78.75959923109127}
+
+
