@@ -1,0 +1,105 @@
+Troisème itération avec utilisation de fasttext pour le word_embeding :
+
+0. Preprocessing des données : 
+
+--> nohup python -u /home/ubuntu/spacework/R-NET/R-Net-master.py --mode prepro > /home/ubuntu/spacework/R-NET/log/r-net-prepro.log &
+
+
+RESULTAT : 
+
+3.6.4 |Anaconda, Inc.| (default, Jan 16 2018, 18:10:19) 
+[GCC 7.2.0]
+/home/ubuntu/anaconda3/lib/python3.6/site-packages/h5py/__init__.py:36: FutureWarning: Conversion of the second argument of issubdtype from `float` to `np.floating` is deprecated. In future, it will be treated as `np.float64 == np.dtype(float).type`.
+  from ._conv import register_converters as _register_converters
+<tensorflow.python.platform.flags._FlagValues object at 0x7fa3567de198>
+prepro
+Generating train examples...
+100%|##########| 442/442 [04:24<00:00,  1.67it/s]
+87599 questions in total
+Generating dev examples...
+100%|##########| 48/48 [00:35<00:00,  1.37it/s]
+10570 questions in total
+Generating test examples...
+100%|##########| 48/48 [00:27<00:00,  1.77it/s]
+10570 questions in total
+Generating word embedding...
+ 45%|####5     | 1000001/2200000 [03:38<04:21, 4584.35it/s]
+91683 / 111136 tokens have corresponding word embedding vector
+Generating char embedding...
+1425 tokens have corresponding embedding vector
+Processing train examples...
+100%|##########| 87599/87599 [03:33<00:00, 410.97it/s]
+Build 87391 / 87599 instances of features in total
+Processing dev examples...
+100%|##########| 10570/10570 [00:22<00:00, 479.92it/s]
+Build 10483 / 10570 instances of features in total
+Processing test examples...
+100%|##########| 10570/10570 [00:23<00:00, 441.06it/s]
+Build 10570 / 10570 instances of features in total
+Saving word embedding...
+Saving char embedding...
+Saving train eval...
+Saving dev eval...
+Saving test eval...
+Saving dev meta...
+Saving test meta...
+
+
+
+1. Lancement de la phase d'apprentissage avec le processus python dans une console 
+
+--> nohup python -u /home/ubuntu/spacework/R-NET/R-Net-master.py --mode train > /home/ubuntu/spacework/R-NET/log/r-net-train.log &
+
+RESULTAT : 
+
+100%|##########| 60000/60000 [19:20:33<00:00,  1.16s/it]n.log 
+100%|##########| 219/219 [01:37<00:00,  2.25it/s]
+
+
+
+
+2. Lancement de la phase de test pour générer les réponses : answer.json
+
+--> nohup python -u /home/ubuntu/spacework/R-NET/R-Net-master.py --mode test > /home/ubuntu/spacework/R-NET/log/r-net-test.log & (tail -300f r-net-test.log)
+
+RESULTAT : 
+
+3.6.4 |Anaconda, Inc.| (default, Jan 16 2018, 18:10:19) 
+[GCC 7.2.0]
+/home/ubuntu/anaconda3/lib/python3.6/site-packages/h5py/__init__.py:36: FutureWarning: Conversion of the second argument of issubdtype from `float` to `np.floating` is deprecated. In future, it will be treated as `np.float64 == np.dtype(float).type`.
+  from ._conv import register_converters as _register_converters
+<tensorflow.python.platform.flags._FlagValues object at 0x7fcd7c1dd1d0>
+test
+Warning: Due to a known bug in Tensorlfow, the parameters of CudnnGRU may not be properly restored.
+Loading model...
+2018-02-23 08:17:18.623894: I tensorflow/core/platform/cpu_feature_guard.cc:137] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 FMA
+2018-02-23 08:17:20.250504: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:892] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2018-02-23 08:17:20.254339: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1030] Found device 0 with properties: 
+name: GeForce GTX 1060 6GB major: 6 minor: 1 memoryClockRate(GHz): 1.7465
+pciBusID: 0000:00:05.0
+totalMemory: 5.93GiB freeMemory: 5.86GiB
+2018-02-23 08:17:20.254492: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1120] Creating TensorFlow device (/device:GPU:0) -> (device: 0, name: GeForce GTX 1060 6GB, pci bus id: 0000:00:05.0, compute capability: 6.1)
+100%|##########| 221/221 [01:57<00:00,  1.89it/s]
+Exact Match: 70.7663197729423, F1: 79.32997570934039
+
+
+
+
+2. Obtenir le score officiel (se placer dans le répertoire de evaluate-v1.1.py) : 
+
+--> python -u /home/ubuntu/spacework/R-NET/evaluate-v1.1.py /home/ubuntu/spacework/R-NET/data/squad/dev-v1.1.json /home/ubuntu/spacework/R-NET/log/answer/answer.json
+
+1.1.py /home/ubuntu/spacework/R-NET/data/squad/dev-v1.1.json /home/ubuntu/spacework/R-NET/log/answer/answer.json
+{"exact_match": 70.7663197729423, "f1": 79.32997570934036}
+
+
+
+
+3. Tensorboard : tensorboard --logdir=/home/ubuntu/spacework/R-NET/log/event
+
+url pour le board : http://54.37.20.249:6006
+
+
+
+
+
