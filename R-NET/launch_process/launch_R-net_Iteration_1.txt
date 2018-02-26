@@ -4,6 +4,10 @@ Première itération avec glove en word embeding :
 
 --> nohup python -u /home/ubuntu/spacework/R-NET/R-Net-master-train.py --mode train > /home/ubuntu/spacework/R-NET/log/r-net-train.log &
 
+Attention, il est préférable de d'utiliser la commande suivante, car le fichier R-Net-master-train.py n'est pas présent : 
+
+nohup python -u /home/ubuntu/spacework/R-NET/R-Net-master.py --mode train > /home/ubuntu/spacework/R-NET/log/r-net-train.log &
+
 RESULTAT : 
 
 100%|██████████| 60000/60000 [19:27:31<00:00,  1.17s/it]n.log 
@@ -16,6 +20,10 @@ la durée a été de 19h27mn
 2. Lancement de la phase de test pour générer les réponses : answer.json
 
 --> nohup python -u /home/ubuntu/spacework/R-NET/R-Net-master-test.py --mode test > /home/ubuntu/spacework/R-NET/log/r-net-test.log &
+
+Attention, il est préférable de d'utiliser la commande suivante, car le fichier R-Net-master-test.py n'est pas présent : 
+
+nohup python -u /home/ubuntu/spacework/R-NET/R-Net-master.py --mode test > /home/ubuntu/spacework/R-NET/log/r-net-test.log &
 
 RESULTAT : 
 
